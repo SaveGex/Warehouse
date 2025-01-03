@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Warehouse.AddElement"
+             Title="AddElement">
+    <VerticalStackLayout>
+        <Button ImageSource="close.png" Clicked="OnCloseModalWindow"/>
+
+        <Label Text="Image id" FontSize="22" TextColor="White"/>
+        <BoxView HorizontalOptions="Fill" HeightRequest="200" Margin="50,0,50,0">
+            <BoxView.GestureRecognizers>
+                <DropGestureRecognizer Drop="OnImageDrop"/>
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <Image x:Name="DroppedImage"
+               WidthRequest="200"
+               HeightRequest="200"
+               Aspect="AspectFit"
+               VerticalOptions="End"
+               HorizontalOptions="Start"/>
+
+        <Button Text="Admit" TextColor="#60d888"/>
+
+    </VerticalStackLayout>
+</ContentPage>
