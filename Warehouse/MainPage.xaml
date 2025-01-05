@@ -6,5 +6,7 @@
     <ScrollView x:Name="scrollView">
         <!--ToDo: Generator of posts and gets data from DB -->
     </ScrollView>
-
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add element" Command="{Binding OpenModalCommand}"/>
+    </ContentPage.ToolbarItems>
 </ContentPage>

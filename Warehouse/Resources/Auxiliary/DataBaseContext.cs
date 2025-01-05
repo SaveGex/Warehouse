@@ -1,27 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Npgsql;
+﻿//using Microsoft.EntityFrameworkCore;
+//using Microsoft.Extensions.Configuration;
+//using Npgsql;
 
-namespace Warehouse.Resources.Auxiliary
-{
-    class DataBaseContext : DbContext
-    {
+//namespace Warehouse.Resources.Auxiliary
+//{
+//    class DataBaseContext : DbContext
+//    {
         
-        public DbSet<baseElement> baseElements { get; set; }
-        string token;
+//        public DbSet<BaseElement> baseElements { get; set; }
+//        public string token;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseNpgsql(token);
-        }
+//        public DataBaseContext()
+//        {
+//            LoadToken();
+//        }
 
-        private async void LoadToken()
-        {
-            this.token = await SecureStorage.GetAsync("ConnectionDefault");
-        }
-        //public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options) {  }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
+//            optionsBuilder.UseNpgsql(token);
+        
+//        private async void LoadToken()
+//        {
+//            this.token = await SecureStorage.GetAsync("ConnectionDefault");
+//        }
+//        //public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options) {  }
 
-        //public DbSet<baseElement> Elements { get; set; }
+//        //public DbSet<baseElement> Elements { get; set; }
 
-    }
-}
+//    }
+//}

@@ -7,12 +7,15 @@ namespace Warehouse
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("ModalPageAdd", typeof(AddElement));
+            Routing.RegisterRoute("AddElement", typeof(AddElement));
+            Routing.RegisterRoute("MainPage", typeof(MainPage));
+
+
         }
 
         private async void OpenModalAdd(object sender, EventArgs e)
         {
-            await Shell.Current.GoToAsync("ModalPageAdd");
+            await Shell.Current.GoToAsync("AddElement");
         }
     }
 }

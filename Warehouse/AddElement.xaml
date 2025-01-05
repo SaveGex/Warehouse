@@ -3,24 +3,64 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Warehouse.AddElement"
              Title="AddElement">
-    <VerticalStackLayout>
-        <Button ImageSource="close.png" Clicked="OnCloseModalWindow"/>
+    <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,Auto,*,*,*">
+        
+        <Button 
+            Grid.Row="0"
+            Grid.Column="10"
+            WidthRequest="50" HeightRequest="50" 
+            HorizontalOptions="End" VerticalOptions="Start"
+            BackgroundColor="#1f1f1f"
+            ImageSource="close.png" 
+            Clicked="OnCloseModalWindow"/>
 
-        <Label Text="Image id" FontSize="22" TextColor="White"/>
-        <BoxView HorizontalOptions="Fill" HeightRequest="200" Margin="50,0,50,0">
+
+
+        <Entry Grid.Row="1"
+               Grid.Column="1" Grid.ColumnSpan="2"
+               HeightRequest="50"
+               Margin="0,0,100,0"
+               x:Name="NamePostField"
+               Placeholder="Name of post"/>
+        <!--<BoxView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HeightRequest="100" Margin="50,0,50,0">
             <BoxView.GestureRecognizers>
                 <DropGestureRecognizer Drop="OnImageDrop"/>
             </BoxView.GestureRecognizers>
-        </BoxView>
+        </BoxView>-->
+        <Button Grid.Row="2" 
+                Grid.Column="1"
+                HeightRequest="25"
+                Margin="0,0,200,0"
+                Text="Pick image" 
+                Clicked="OnPickImage"/>
 
-        <Image x:Name="DroppedImage"
-               WidthRequest="200"
-               HeightRequest="200"
-               Aspect="AspectFit"
-               VerticalOptions="End"
-               HorizontalOptions="Start"/>
+        <Image Grid.Row="2"
+               Grid.Column="1" Grid.ColumnSpan="2"
+               HorizontalOptions="Center"
+               BackgroundColor="#1f1f1f"
+               MaximumHeightRequest="200"
+               Margin="200,0,100,0"
+               x:Name="DroppedImage"
+               Aspect="AspectFit">
+            <Image.GestureRecognizers>
+                <PointerGestureRecognizer PointerEntered="OnHoverImage"
+                                          PointerExited="OnExitImage"/>
+            </Image.GestureRecognizers>
+        </Image>
 
-        <Button Text="Admit" TextColor="#60d888"/>
+        <Editor Grid.Row="3" 
+                Grid.Column="1" Grid.ColumnSpan="2"
+                HeightRequest="100"
+                Placeholder="Describe your object "
+                Margin="0,40,100,0"
+                x:Name="DescriptionField"/>
 
-    </VerticalStackLayout>
+        <Button Grid.Row="4"
+                Grid.Column="1" Grid.ColumnSpan="2"
+                Margin="200, 0"
+                MaximumHeightRequest="50"
+                Text="Admit" TextColor="White"
+                Clicked="OnAdmit"/>
+
+    </Grid>
 </ContentPage>

@@ -1,16 +1,25 @@
 ﻿namespace Warehouse.Resources.Auxiliary
 {
-    class baseElement
+    public class BaseElement
     {
-        public baseElement(string imageId = "Null", string name = "Null", string description = "Null") 
+        public string? name { get; set; }
+        public string? description { get; set; }
+        public byte[]? image { get; set; }
+        public BaseElement(byte[]? image = null, string? name = null, string? description = null) 
         {
-            this.imageId = imageId;
+            this.image = image;
             this.name = name;
             this.description = description;
-
         }
-        public string imageId {  get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+
+        public static ImageSource ConvertBytesToImageSource(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0)
+                return null;
+
+            var stream = new MemoryStream(bytes);
+
+            return ImageSource.FromStream(() => stream);
+        }
     }
 }
