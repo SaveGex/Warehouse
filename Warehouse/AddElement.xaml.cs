@@ -48,7 +48,9 @@ public partial class AddElement : ContentPage
         {
             BaseElement baseElement = new BaseElement(imageData, NamePostField.Text, DescriptionField.Text);
             NavigationData.CurrentBaseElement = baseElement;
-            await Shell.Current.GoToAsync("..");
+            await Shell.Current.Navigation.PopToRootAsync(true);
+
+            await Shell.Current.GoToAsync("//MainPage");
             //await Navigation.PushAsync(new MainPage(baseElement));
             //await Shell.Current.GoToAsync("MainPage");
         }
