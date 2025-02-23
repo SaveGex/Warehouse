@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using DataBaseContext = Warehouse.Auxiliary.DataBaseContext;
 namespace Warehouse
 {
     public static class MauiProgram
@@ -8,7 +7,6 @@ namespace Warehouse
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
-            //SaveSecret();
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -16,6 +14,8 @@ namespace Warehouse
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+
+            builder.Services.AddTransient<MainPage>();
 
             var builderDB = 
 

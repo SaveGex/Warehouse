@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Warehouse.ChooseTemplate"
+             Title="ChooseTemplate">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!--Frame-->
+            <x:Double x:Key="FrameMaxWidth">300</x:Double>
+            <x:Double x:Key="FrameMaxHeight">400</x:Double>
+            <x:Double x:Key="FrameWidth">200</x:Double>
+            <x:Double x:Key="FrameHeight">300</x:Double>
+            <!--Image-->
+            <x:Double x:Key="ImageWidth">200</x:Double>
+            <x:Double x:Key="ImageHeight">200</x:Double>
+
+            <!--Button-->
+            <x:Double x:Key="ButtonHeight">50</x:Double>
+            <x:Double x:Key="ButtonWidth">170</x:Double>
+            <x:Double x:Key="ButtonFontSize">14</x:Double>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid 
+            x:Name="ShowGrid"
+            RowDefinitions="*"
+            ColumnDefinitions="*, *">
+            <Frame
+                x:Name="UnknownFrame"
+                Grid.Row="0"
+                Grid.Column="0"
+                MaximumWidthRequest="{StaticResource FrameMaxWidth}"
+                MaximumHeightRequest="{StaticResource FrameMaxHeight}">
+                <VerticalStackLayout>
+                    <Image
+                        Source="unknown_object.png"
+                        Aspect="AspectFill"
+                        WidthRequest="{StaticResource ImageWidth}"
+                        HeightRequest="{StaticResource ImageHeight}"/>
+                    <Button
+                        FontSize="{StaticResource ButtonFontSize}"
+                        MaximumHeightRequest="{StaticResource FrameMaxWidth}"
+                        HeightRequest="{StaticResource ButtonHeight}" 
+                        WidthRequest="{StaticResource ButtonWidth}"
+                        Text="Add indefinite object"
+                        Clicked="ToIndefinedElement"/>
+                </VerticalStackLayout>
+                <Frame.GestureRecognizers>
+                    <PointerGestureRecognizer
+                        PointerEntered="OnFrame"
+                        PointerExited="OutFrame"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+            <Frame
+                Grid.Row="0"
+                Grid.Column="1"
+                MaximumWidthRequest="{StaticResource FrameMaxWidth}"
+                MaximumHeightRequest="{StaticResource FrameMaxHeight}">
+                <VerticalStackLayout>
+                    <Image
+                        Source="pizza_icon.png"
+                        WidthRequest="{StaticResource ImageWidth}"
+                        HeightRequest="{StaticResource ImageHeight}"/>
+                    <Button
+                        FontSize="{StaticResource ButtonFontSize}"
+                        MaximumHeightRequest="{StaticResource FrameMaxWidth}"
+                        HeightRequest="{StaticResource ButtonHeight}"
+                        WidthRequest="{StaticResource ButtonWidth}"
+                        Text="Add some pizza"
+                        Clicked="ToAddPizza"/>
+                </VerticalStackLayout>
+                <Frame.GestureRecognizers>
+                    <PointerGestureRecognizer
+                        PointerEntered="OnFrame"
+                        PointerExited="OutFrame"/>
+                </Frame.GestureRecognizers>
+            </Frame>
+        </Grid>
+    </ScrollView>
+</ContentPage>

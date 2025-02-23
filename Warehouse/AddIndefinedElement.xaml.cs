@@ -1,12 +1,13 @@
 using System.Xml.Linq;
-using Warehouse.Resources.Auxiliary;
 using System.Text.Json;
+using Warehouse.Models;
+using Warehouse.Auxiliary;
 
 namespace Warehouse;
 
-public partial class AddElement : ContentPage
+public partial class AddIndefinedElement : ContentPage
 {
-	public AddElement()
+	public AddIndefinedElement()
 	{
 		InitializeComponent();
     }
@@ -56,7 +57,7 @@ public partial class AddElement : ContentPage
         }
         else
         {
-            await DisplayAlert("Error", "Unexpected exception in AddElement.xaml.cs", "Ok");
+            await DisplayAlert("Error", "Unexpected exception in AddIndefinedElement.xaml.cs", "Ok");
         }
     }
 

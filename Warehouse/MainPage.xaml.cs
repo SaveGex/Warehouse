@@ -1,6 +1,5 @@
-﻿using System.Reflection.Metadata;
-using System.Text.Json;
-using BaseElement = Warehouse.Resources.Auxiliary.BaseElement;
+﻿using Warehouse.Auxiliary;
+using BaseElement = Warehouse.Models.BaseElement;
 
 namespace Warehouse
 {
@@ -21,7 +20,7 @@ namespace Warehouse
         {
             InitializeComponent();
             OpenModalCommand = new Command(OpenModal);
-            
+
             _elements = new List<BaseElement>();
 
             totNumber = _rows * _cols;
@@ -33,9 +32,10 @@ namespace Warehouse
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            
 
             _baseElement = NavigationData.CurrentBaseElement;
+
+            LoadXXElements();
 
             UpdateViewElements();
 
@@ -43,10 +43,15 @@ namespace Warehouse
 
         }
 
-
-        private async void OpenModal()
+        //Roman numerals "X = 10" Load_XX_ == Load20...()
+        private void LoadXXElements()
         {
-            await Shell.Current.GoToAsync("AddElement");
+            
+        }
+
+        public async void OpenModal()
+        {
+            await Shell.Current.GoToAsync("ChooseTemplate");
         }
 
 
