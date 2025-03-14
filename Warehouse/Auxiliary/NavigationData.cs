@@ -1,4 +1,4 @@
-﻿using Warehouse.Models;
+﻿using Warehouse.DataBase.Models;
 
 namespace Warehouse.Auxiliary
 {

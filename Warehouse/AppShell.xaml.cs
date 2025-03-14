@@ -11,10 +11,5 @@ namespace Warehouse
             Routing.RegisterRoute("MainPage", typeof(MainPage));
             Routing.RegisterRoute("ChooseTemplate", typeof(ChooseTemplate));
         }
-
-        //private async void OpenModalAdd(object sender, EventArgs e)
-        //{
-        //    await Shell.Current.GoToAsync("AddIndefinedElement");
-        //}
     }
 }

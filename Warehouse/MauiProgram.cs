@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using DataBaseContext = Warehouse.Auxiliary.DataBaseContext;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
 namespace Warehouse
 {
     public static class MauiProgram
@@ -7,6 +8,12 @@ namespace Warehouse
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
+
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            // Реєстрація IConfiguration
+            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>

@@ -1,11 +1,17 @@
 ﻿using Warehouse.Auxiliary;
-using BaseElement = Warehouse.Models.BaseElement;
+using Warehouse.Auxiliary.Patterns.Interfaces;
+using Warehouse.DataBase;
+using BaseElement = Warehouse.DataBase.Models.BaseElement;
 
 namespace Warehouse
 {
-    public partial class MainPage : ContentPage
+    [QueryProperty(nameof(AfRows), "afRows")]
+    public partial class MainPage : ContentPage, IObserver
     {
+        //insane spot for such pattern as Observer ! I am happy
         Grid views = new Grid();
+
+        public int AfRows { get; set; }
 
         List<BaseElement> _elements;
 
@@ -19,6 +25,7 @@ namespace Warehouse
         public MainPage()
         {
             InitializeComponent();
+            
             OpenModalCommand = new Command(OpenModal);
 
             _elements = new List<BaseElement>();
@@ -26,16 +33,17 @@ namespace Warehouse
             totNumber = _rows * _cols;
             BindingContext = this;
 
+            LoadXXElements();
         }
 
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
             _baseElement = NavigationData.CurrentBaseElement;
 
-            LoadXXElements();
+            await DisplayAlert("Attention", $"Affected rows: {AfRows}", "Ok");
 
             UpdateViewElements();
 
@@ -44,9 +52,32 @@ namespace Warehouse
         }
 
         //Roman numerals "X = 10" Load_XX_ == Load20...()
-        private void LoadXXElements()
+        private async void LoadXXElements()
         {
+            List<Dictionary<string, object>>? queryList = await DataBaseContext.ExecuteQueryAsync("SELECT [Name], [Image], [Description] FROM Undefined;");
             
+            if(queryList != null && queryList.Count > 0)
+            {
+
+                for (int i = 0; i < queryList.Count; i++)
+                {
+                    BaseElement tempElement = new BaseElement();
+                    foreach (var item in queryList[i])
+                    {
+                        if(item.Key == "Id") 
+                            tempElement.objectIndex = (int)item.Value;
+                        else if (item.Key == "Name")
+                            tempElement.name = item.Value as string;
+                        else if (item.Key == "Image")
+                            tempElement.image = item.Value as byte[];
+                        else if(item.Key == "Description")
+                            tempElement.description = item.Value as string;
+                    }
+                    if(tempElement.notNull())
+                        _elements.Add(tempElement);
+                }
+                CreateMarkUp();
+            }
         }
 
         public async void OpenModal()
@@ -217,8 +248,22 @@ namespace Warehouse
 
         private async void ShowDetails(BaseElement element)
         {
-            await Shell.Current.GoToAsync("somePage");
+            //await Shell.Current.GoToAsync("somePage");
         }
 
+        public bool AddSubscriber(ISubscriber subscriber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveSubscriber(ISubscriber subscriber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool NotifySubscribers()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

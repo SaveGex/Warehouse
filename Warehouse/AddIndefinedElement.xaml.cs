@@ -1,7 +1,6 @@
-using System.Xml.Linq;
-using System.Text.Json;
-using Warehouse.Models;
 using Warehouse.Auxiliary;
+using Warehouse.DataBase;
+using Warehouse.DataBase.Models;
 
 namespace Warehouse;
 
@@ -17,6 +16,7 @@ public partial class AddIndefinedElement : ContentPage
     {
         bool markNameExists = false, markDescriptionExists = false, markImageExists = false;
         byte[]? imageData = null;
+        var fileSource = DroppedImage.Source as FileImageSource;
 
         if (NamePostField.Text != null)
         {
@@ -28,7 +28,6 @@ public partial class AddIndefinedElement : ContentPage
             markDescriptionExists = true;
         }
 
-        var fileSource = DroppedImage.Source as FileImageSource;
         if (fileSource != null)
         {
             string filePath = fileSource.File; 
@@ -38,6 +37,7 @@ public partial class AddIndefinedElement : ContentPage
                 markImageExists = true;
             }
         }
+
         if (!markNameExists || !markImageExists || !markDescriptionExists)
         {
             string allert = !markNameExists ? "\n\nField name is empty" : string.Empty;
@@ -45,15 +45,27 @@ public partial class AddIndefinedElement : ContentPage
             allert = !markDescriptionExists ? allert + "\n\nYou have to provide an some description about your object" : allert;
             await DisplayAlert("Warning", "You must fill out the form for add element" + allert, "Ok");
         }
-        else if(imageData != null && markNameExists && markDescriptionExists) 
+        else if(imageData             != null && 
+                NamePostField.Text    != null && 
+                DescriptionField.Text != null) 
         {
             BaseElement baseElement = new BaseElement(imageData, NamePostField.Text, DescriptionField.Text);
             NavigationData.CurrentBaseElement = baseElement;
-            await Shell.Current.Navigation.PopToRootAsync(true);
 
-            await Shell.Current.GoToAsync("//MainPage");
-            //await Navigation.PushAsync(new MainPage(baseElement));
-            //await Shell.Current.GoToAsync("MainPage");
+            string query = "INSERT INTO Undefined ([Name], [Image], [Description]) VALUES (@Name, @Image, @Description)";
+
+            // Підготовка параметрів
+            var parameters = new Dictionary<string, object>
+            {
+                { "@Name", NamePostField.Text },
+                { "@Image", imageData },
+                { "@Description", DescriptionField.Text }
+            };
+
+            // Виконання запиту
+            int afRows = await DataBaseContext.ExecuteNonQueryAsync(query, parameters);
+
+            await Shell.Current.GoToAsync($"//MainPage?afRows={afRows}");
         }
         else
         {
@@ -61,30 +73,14 @@ public partial class AddIndefinedElement : ContentPage
         }
     }
 
+
     private async void OnCloseModalWindow(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("..");
+        await Shell.Current.GoToAsync("//MainPage");
 
     }
-	//private async void OnImageDrop(object sender, DropEventArgs e)
-	//{
- //       if (e.Data.Properties.ContainsKey("Image")){
- //           var img = await e.Data.GetImageAsync();
- //           if (img != null)
- //           {
- //               DataBaseContext baseContext = new DataBaseContext();
- //               DroppedImage.Source = img;
- //               //baseContext.baseElements.Add();
- //           }
- //           //DataBaseContext context = new DataBaseContext();
- //           //ToDo: View and addition elements to table. (Figure out how to work with table)
- //           else
- //           {
- //               // Якщо зображення не вдалося отримати
- //               await Application.Current.MainPage.DisplayAlert("Error", "Failed to load image", "OK");
- //           }
- //       }
- //   }
+
+
     private async void OnPickImage(object sender, EventArgs e)
     {
         var result = await FilePicker.PickAsync(new PickOptions
@@ -101,6 +97,7 @@ public partial class AddIndefinedElement : ContentPage
         DroppedImage.Source = result.FullPath;
     }
 
+    
     private async void OnHoverImage(object sender, EventArgs e)
     {
         var image = sender as Image;
@@ -109,6 +106,8 @@ public partial class AddIndefinedElement : ContentPage
             await image.ScaleTo(2, 1050, Easing.CubicInOut);
         }
     }
+
+
     private async void OnExitImage(object sender, EventArgs e)
     {
         var image = sender as Image;
