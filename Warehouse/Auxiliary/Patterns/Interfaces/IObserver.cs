@@ -8,8 +8,9 @@ namespace Warehouse.Auxiliary.Patterns.Interfaces
 {
     public interface IObserver
     {
-        public bool AddSubscriber(ISubscriber subscriber);
-        public bool RemoveSubscriber(ISubscriber subscriber);
-        public bool NotifySubscribers();
+
+        public bool AddSubscriber(ISubscriber? subscriber);
+        public bool RemoveSubscriber(ISubscriber? subscriber);
+        public void NotifySubscribers(string? args, object? obj);
     }
 }

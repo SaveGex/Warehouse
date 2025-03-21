@@ -1,41 +1,51 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using Warehouse.DataBase;
+using Warehouse;
 
-namespace Warehouse
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static IServiceProvider Services { get; private set; }
+
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
+        var builder = MauiApp.CreateBuilder();
+        builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-            builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        var connectionString = getConnectionString();
 
-            // Реєстрація IConfiguration
-            builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
+        builder.Services.AddDbContext<WarehouseContext>(options =>
+            options.UseSqlServer(connectionString ?? throw new InvalidOperationException("Connection string is null.")));
 
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
-
-            builder.Services.AddTransient<MainPage>();
-
-            var builderDB = 
+        builder.Services.AddTransient<MainPage>();
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
-        }
-        //private static async void SaveSecret()
-        //{
-        //    await SecureStorage.SetAsync("DefaultConnection", "Host=localhost;Port=5432;Database=.NET;Username=C#;Password=2558");
+        var app = builder.Build();
+        Services = app.Services;
+        return app;
+    }
 
-        //}
+    // Метод отримання рядка з'єднання як у твоєму прикладі
+    public static string getConnectionString()
+    {
+        string jsonString = File.ReadAllText(System.AppContext.BaseDirectory + "appsettings.json");
+        string connectionString = (string)JObject.Parse(jsonString)["ConnectionStrings"]["DefaultConnection"];
+
+        if (connectionString == null)
+            throw new Exception("Connection string is null. Check your appsettings.json or DI registration.");
+
+        return connectionString;
     }
 }

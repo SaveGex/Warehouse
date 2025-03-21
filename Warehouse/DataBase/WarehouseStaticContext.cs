@@ -1,28 +1,22 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
-
+using Newtonsoft.Json.Linq;
 
 namespace Warehouse.DataBase
 {
-    internal static class DataBaseContext
+    internal static class WarehouseStaticContext
     {
-        private static readonly string connectionString;
-
-        private static readonly IConfiguration _configuration;
+        private static readonly string? connectionString;
 
         public static int countOfIndefinedElementsWhenWasLastUpdated { get; set; } = 0;
 
 
-        static DataBaseContext()
+        static WarehouseStaticContext()
         {
-            // Отримання IConfiguration з DI
-            _configuration = Application.Current?.Handler?.MauiContext?.Services.GetService<IConfiguration>();
-
-            connectionString = _configuration?.GetConnectionString("DefaultConnection");
+            connectionString = MauiProgram.getConnectionString();
 
             if (connectionString == null)
                 throw new Exception("Connection string is null. Check your appsettings.json or DI registration.");
-
         }
 
 

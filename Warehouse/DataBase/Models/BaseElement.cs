@@ -1,28 +1,27 @@
-﻿using DB = Warehouse.DataBase.DataBaseContext;
-
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using DB = Warehouse.DataBase.WarehouseStaticContext;
 
 namespace Warehouse.DataBase.Models
 {
     public class BaseElement
     {
+        [NotMapped]
         public static int countOfElements { get; set; } //general count of all elements getting max id from DB for synchronization 
+        public int Id { get; set; }
+        [NotMapped]
         public int objectIndex { get; set; } //current specific index of specific object
         public string? name { get; set; }
         public string? description { get; set; }
         public byte[]? image { get; set; } // array of bytes which could be converted to some image... Perhaps .png or .jpg
-
-        static BaseElement()
-        {
-            countOfElements = (int)DB.ExecuteQuery("SELECT \r\nMax([Id])\r\nFROM Undefined;").First().Values.First();
-        }
-
         public BaseElement()
         {
+            Id = countOfElements;
             objectIndex = countOfElements;
             countOfElements++;
         }
         public BaseElement(byte[]? image = null, string? name = null, string? description = null)
         {
+            Id = countOfElements;
             objectIndex = countOfElements;
             this.image = image;
             this.name = name;

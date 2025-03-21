@@ -1,4 +1,6 @@
-﻿using Warehouse.Auxiliary;
+﻿using Microsoft.IdentityModel.Tokens;
+using Warehouse.Auxiliary;
+using Warehouse.Auxiliary.Patterns;
 using Warehouse.Auxiliary.Patterns.Interfaces;
 using Warehouse.DataBase;
 using BaseElement = Warehouse.DataBase.Models.BaseElement;
@@ -9,29 +11,32 @@ namespace Warehouse
     public partial class MainPage : ContentPage, IObserver
     {
         //insane spot for such pattern as Observer ! I am happy
+        List<ISubscriber> Subscribers;
         Grid views = new Grid();
-
         public int AfRows { get; set; }
-
         List<BaseElement> _elements;
-
         public Command OpenModalCommand { get; }
-
         int _rows = DeviceInfo.Platform == DevicePlatform.WinUI ? 5 : DeviceInfo.Platform == DevicePlatform.Android ? 2 : 3;
         int _cols = DeviceInfo.Platform == DevicePlatform.WinUI ? 4 : DeviceInfo.Platform == DevicePlatform.Android ? 10 : 9;
         public int totNumber { get; set; }
         private BaseElement? _baseElement { get; set; }
 
+
         public MainPage()
         {
             InitializeComponent();
-            
+
+            //initializing
             OpenModalCommand = new Command(OpenModal);
+            _elements        = new List<BaseElement>();
+            Subscribers      = new List<ISubscriber>();
 
-            _elements = new List<BaseElement>();
+            //Add subscribers
+            Subscribers.Add(new DBManagerSubscriber());
 
+            //binding data
             totNumber = _rows * _cols;
-            BindingContext = this;
+            BindingContext = this; // for binding context. It's mean all xaml code of this page will be looking for each BINDING data in xaml - will be looking for in that class
 
             LoadXXElements();
         }
@@ -45,16 +50,15 @@ namespace Warehouse
 
             await DisplayAlert("Attention", $"Affected rows: {AfRows}", "Ok");
 
-            UpdateViewElements();
+            AddElement();
 
             CreateMarkUp();
-
         }
 
         //Roman numerals "X = 10" Load_XX_ == Load20...()
         private async void LoadXXElements()
         {
-            List<Dictionary<string, object>>? queryList = await DataBaseContext.ExecuteQueryAsync("SELECT [Name], [Image], [Description] FROM Undefined;");
+            List<Dictionary<string, object>>? queryList = await WarehouseStaticContext.ExecuteQueryAsync("SELECT TOP 20 [Id], [Name], [Image], [Description] FROM Undefined;");
             
             if(queryList != null && queryList.Count > 0)
             {
@@ -64,8 +68,8 @@ namespace Warehouse
                     BaseElement tempElement = new BaseElement();
                     foreach (var item in queryList[i])
                     {
-                        if(item.Key == "Id") 
-                            tempElement.objectIndex = (int)item.Value;
+                        if (item.Key == "Id") 
+                            tempElement.Id = (int)item.Value;
                         else if (item.Key == "Name")
                             tempElement.name = item.Value as string;
                         else if (item.Key == "Image")
@@ -73,12 +77,16 @@ namespace Warehouse
                         else if(item.Key == "Description")
                             tempElement.description = item.Value as string;
                     }
-                    if(tempElement.notNull())
+                    if (tempElement.notNull())
+                    {
+                        tempElement.objectIndex = _elements.Count; // Initialize objectIndex
                         _elements.Add(tempElement);
+                    }
                 }
                 CreateMarkUp();
             }
         }
+
 
         public async void OpenModal()
         {
@@ -86,13 +94,13 @@ namespace Warehouse
         }
 
 
-
-        private void UpdateViewElements()
+        private void AddElement()
         {
+            NotifySubscribers("ADD", _baseElement);
+
             if(_baseElement != null)
                 _elements.Add(_baseElement);
         }
-
 
 
         private void CreateMarkUp()
@@ -180,7 +188,7 @@ namespace Warehouse
                 Source = "red_trash_canon_icon.png",
                 WidthRequest = 30,
                 HeightRequest = 30,
-                BackgroundColor = Colors.Transparent // При потребі
+                BackgroundColor = Colors.Transparent 
             };
             var tapGestureRecognizer = new TapGestureRecognizer();
 
@@ -233,37 +241,50 @@ namespace Warehouse
             return frame;
         }
         
-        private void deleteElementAndReMarkUp(int index)
+
+void deleteElementAndReMarkUp(int index)
         {
+            NotifySubscribers("DELETE", _elements[index]);
+
             _elements.RemoveAt(index);
-            foreach (BaseElement element in _elements)
+            for (int i = 0; i < _elements.Count; i++)
             {
-                if (element.objectIndex > index)
-                {
-                    element.objectIndex--;
-                }
+                _elements[i].objectIndex = i; // Reassign objectIndex to maintain consistency
             }
             CreateMarkUp();
         }
+
 
         private async void ShowDetails(BaseElement element)
         {
             //await Shell.Current.GoToAsync("somePage");
         }
 
-        public bool AddSubscriber(ISubscriber subscriber)
+
+        public bool AddSubscriber(ISubscriber? subscriber)
         {
-            throw new NotImplementedException();
+            if(subscriber == null)
+                return false;
+            Subscribers.Add(subscriber);
+            return true;
         }
 
-        public bool RemoveSubscriber(ISubscriber subscriber)
+
+        public bool RemoveSubscriber(ISubscriber? subscriber)
         {
-            throw new NotImplementedException();
+            if (subscriber == null)
+                return false;
+            Subscribers.Remove(subscriber);
+            return true;
         }
 
-        public bool NotifySubscribers()
+
+        public void NotifySubscribers(string? args = null, object? obj = null)
         {
-            throw new NotImplementedException();
+            foreach (ISubscriber subscriber in Subscribers)
+            {
+                subscriber.Update(args, obj);
+            }
         }
     }
 }

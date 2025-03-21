@@ -63,7 +63,7 @@ public partial class AddIndefinedElement : ContentPage
             };
 
             // Виконання запиту
-            int afRows = await DataBaseContext.ExecuteNonQueryAsync(query, parameters);
+            int afRows = await WarehouseStaticContext.ExecuteNonQueryAsync(query, parameters);
 
             await Shell.Current.GoToAsync($"//MainPage?afRows={afRows}");
         }

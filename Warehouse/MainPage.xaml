@@ -2,17 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Warehouse.MainPage">
-    
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add element" Command="{Binding OpenModalCommand}"/>
     </ContentPage.ToolbarItems>
 
-    <!--<Shell.TitleView>
-        <Button Text="Add element" Clicked="OpenModal" WidthRequest="100" HeightRequest="50" HorizontalOptions="End"/>
-    </Shell.TitleView>-->
-    
     <ScrollView x:Name="scrollView">
-        <!--ToDo: Generator of posts and gets data from DB -->
+        
     </ScrollView>
 
 
