@@ -57,7 +57,8 @@ public partial class ChooseTemplate : ContentPage
 
 	private async void ToAddPizza(object sender, EventArgs e)
 	{
-		await Shell.Current.GoToAsync("..");
+		await DisplayAlert("In development...", "This template is in development", "OK");
+        await Shell.Current.GoToAsync("..");
 	}
 
 

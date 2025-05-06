@@ -1,3 +1,5 @@
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Auxiliary;
 using Warehouse.DataBase;
 using Warehouse.DataBase.Models;
@@ -52,20 +54,19 @@ public partial class AddIndefinedElement : ContentPage
             BaseElement baseElement = new BaseElement(imageData, NamePostField.Text, DescriptionField.Text);
             NavigationData.CurrentBaseElement = baseElement;
 
-            string query = "INSERT INTO Undefined ([Name], [Image], [Description]) VALUES (@Name, @Image, @Description)";
+            //save to DB
+            DbContextOptionsBuilder<WarehouseContext> optionsBuilder = new DbContextOptionsBuilder<WarehouseContext>();
+            optionsBuilder.UseSqlServer(AppConfig.GetConnectionString());
 
-            // Підготовка параметрів
-            var parameters = new Dictionary<string, object>
-            {
-                { "@Name", NamePostField.Text },
-                { "@Image", imageData },
-                { "@Description", DescriptionField.Text }
-            };
+            DbContextOptions<WarehouseContext> options = optionsBuilder.Options;
+            using WarehouseContext Db = new WarehouseContext(options);
 
-            // Виконання запиту
-            int afRows = await WarehouseStaticContext.ExecuteNonQueryAsync(query, parameters);
+            Db.Indefined.Add(baseElement);
+            int afRows = await Db.SaveChangesAsync();
 
-            await Shell.Current.GoToAsync($"//MainPage?afRows={afRows}");
+
+
+            await Shell.Current.GoToAsync($"//MainPage?AffectedRows={afRows}");
         }
         else
         {
