@@ -43,6 +43,7 @@
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>-->
 	  <UserSecretsId>9f5e733b-e109-49a0-a70b-44f942c25a5f</UserSecretsId>
+	  <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -64,6 +65,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
@@ -78,10 +80,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="AddIndefinedElement.xaml">
+	  <MauiXaml Update="Views\AddIndefinedElement.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ChooseTemplate.xaml">
+	  <MauiXaml Update="Views\ArbitraryElement.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\ChooseTemplate.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="ModalHandler.xaml">
@@ -98,19 +103,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="AddIndefinedElement.xaml.cs">
+	  <Compile Update="Views\AddIndefinedElement.xaml.cs">
 	    <DependentUpon>AddIndefinedElement.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="appsettings.json">
+		<Content Include="Configurations\appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Configurations\" />
 	</ItemGroup>
 </Project>

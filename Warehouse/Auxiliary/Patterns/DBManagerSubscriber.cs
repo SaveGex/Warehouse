@@ -24,6 +24,7 @@ namespace Warehouse.Auxiliary.Patterns
 
             switch (args)
             {
+                
                 case "DELETE":
                     context.Remove(obj);
                     break;

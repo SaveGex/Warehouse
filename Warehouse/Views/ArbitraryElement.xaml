@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Warehouse.ViewModels"
+             xmlns:models="clr-namespace:Warehouse.DataBase.Models"
+             x:Class="Warehouse.Views.ArbitraryElement"
+             x:DataType="vm:ArbitaryElementViewModel"
+             Title="ArbitraryElement">
+
+    <ContentPage.BindingContext>
+        <vm:ArbitaryElementViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout x:DataType="models:BaseElement"
+                             BindingContext="{Binding Element}">
+            <Label Text="{Binding Id}"/>
+            <Entry Text="{Binding name}"
+                   SemanticProperties.HeadingLevel="Level1"
+                   FontSize="32"
+                   HorizontalOptions="Center"/>
+            <StackLayout HorizontalOptions="Center"
+                         MaximumHeightRequest="500">
+                <Image Source="{Binding ImageSource}"
+                       MinimumHeightRequest="100"
+                       MaximumHeightRequest="400"
+                       MinimumWidthRequest="100"
+                       MaximumWidthRequest="400"
+                       Aspect="AspectFill"/>
+                <Button Text="Change image"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChangeImageCommand}"
+                        HeightRequest="50"
+                        MaximumWidthRequest="130"
+                        HorizontalOptions="End"/>
+            </StackLayout>
+            <Entry Text="{Binding description}"
+                   WidthRequest="250"
+                   HeightRequest="100"
+                   FontSize="18"
+                   HorizontalOptions="Center"/>
+            <Button Text="Save"
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChangeInfoCommand}"
+                    HeightRequest="50"
+                    WidthRequest="100"
+                    HorizontalOptions="Center"/>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

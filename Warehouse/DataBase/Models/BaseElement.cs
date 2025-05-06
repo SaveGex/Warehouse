@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using DB = Warehouse.DataBase.WarehouseStaticContext;
+using System.Reflection.PortableExecutable;
 
 namespace Warehouse.DataBase.Models
 {
@@ -13,21 +13,48 @@ namespace Warehouse.DataBase.Models
         public string? name { get; set; }
         public string? description { get; set; }
         public byte[]? image { get; set; } // array of bytes which could be converted to some image... Perhaps .png or .jpg
+
+        [NotMapped]
+        public ImageSource ImageSource
+        {
+            get
+            {
+                if (image == null)
+                {
+                    string unknownIconPath = Path.Join(AppContext.BaseDirectory,"..","..","..","..","..", "Resources", "Images", "unknown_object.png");
+                    byte[]? unknown_icon = File.ReadAllBytes(unknownIconPath);
+                    return ImageSource.FromStream(() => new MemoryStream(unknown_icon));
+                }
+                return ImageSource.FromStream(() => new MemoryStream(image));
+            }
+        }
+
         public BaseElement()
         {
             Id = countOfElements;
             objectIndex = countOfElements;
             countOfElements++;
         }
-        public BaseElement(byte[]? image = null, string? name = null, string? description = null)
+        public BaseElement(byte[]? image = null, string? name = null, string? description = null, int? id = null)
         {
-            Id = countOfElements;
+            Id = (int)(id is null ? countOfElements : id);
             objectIndex = countOfElements;
             this.image = image;
             this.name = name;
             this.description = description;
             countOfElements++;
 
+        }
+        public BaseElement(BaseElement element)
+        {
+            if (element == null)
+                throw new Exception("Element is null. Directory: " + Path.Join(AppContext.BaseDirectory, "DataBase", "Models", "BaseElement.cs"));
+            Id = element.Id;
+            objectIndex = element.objectIndex;
+            image = element.image;
+            name = element.name;
+            description = element.description;
+            countOfElements++;
         }
         ~BaseElement()
         {

@@ -1,4 +1,6 @@
 ﻿
+using Warehouse.Views;
+
 namespace Warehouse
 {
     public partial class AppShell : Shell
@@ -7,9 +9,10 @@ namespace Warehouse
         {
             InitializeComponent();
 
-            Routing.RegisterRoute("AddIndefinedElement", typeof(AddIndefinedElement));
-            Routing.RegisterRoute("MainPage", typeof(MainPage));
-            Routing.RegisterRoute("ChooseTemplate", typeof(ChooseTemplate));
+            Routing.RegisterRoute(nameof(AddIndefinedElement), typeof(AddIndefinedElement));
+            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+            Routing.RegisterRoute(nameof(ChooseTemplate), typeof(ChooseTemplate));
+            Routing.RegisterRoute(nameof(ArbitraryElement), typeof(ArbitraryElement));
         }
     }
 }
