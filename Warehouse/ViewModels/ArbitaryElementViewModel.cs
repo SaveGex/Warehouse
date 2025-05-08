@@ -11,17 +11,17 @@ namespace Warehouse.ViewModels;
 class ArbitaryElementViewModel : ObservableObject, IQueryAttributable
 {
     private ArbitaryElementModel _model;
-    private BaseElement _prymaryElement;
+    private BaseElement? _prymaryElement;
     public ICommand ChangeInfoCommand { get; }
     public ICommand ChangeImageCommand { get; }
 
-    private BaseElement _element;
-    public BaseElement Element
+    private BaseElement? _element; // is initialized with together with Element
+    public BaseElement? Element// is initialized in ApplyQueryAttributes
     {
         get => _element;
         set
         {
-            if (_element != value)
+            if (_element != value && value is not null)
             {
                 _element = value;
                 OnPropertyChanged(nameof(Element));
@@ -31,7 +31,7 @@ class ArbitaryElementViewModel : ObservableObject, IQueryAttributable
             
     private BaseElement prymaryElement
     {
-        get => _prymaryElement;
+        get => (_prymaryElement is null ? throw new Exception($"Nullable reference {Path.Join(AppContext.BaseDirectory, "ViewModels", "ArbitraryElementViewModel.cs")}") : _prymaryElement);
         set
         {
             if (_prymaryElement is null)
@@ -63,12 +63,12 @@ class ArbitaryElementViewModel : ObservableObject, IQueryAttributable
         using var ms = new MemoryStream();
         await stream.CopyToAsync(ms);
 
+        if(Element == null)
+            throw new Exception($"Element is null. Directory: {Path.Join(AppContext.BaseDirectory, "ViewModels", "ArbitraryElementViewModel.cs")}");
+
         Element.image = ms.ToArray();
         OnPropertyChanged(nameof(Element));
-
-        var tmp = Element;
-        Element = null;       // (щоб гарантовано спрацювало OnPropertyChanged)
-        Element = tmp;
+        OnPropertyChanged(nameof(Element.ImageSource));
     }
 
 
@@ -80,7 +80,8 @@ class ArbitaryElementViewModel : ObservableObject, IQueryAttributable
         using var Db = new WarehouseContext(options);
 
         BaseElement query = Db.Indefined.First(x => x.Id == prymaryElement.Id);
-
+        if(Element == null)
+            throw new Exception($"Element is null. Directory: {Path.Join(AppContext.BaseDirectory, "ViewModels", "ArbitraryElementViewModel.cs")}");
         query.name = Element.name;
         query.description = Element.description;
         query.image = Element.image;
@@ -89,7 +90,8 @@ class ArbitaryElementViewModel : ObservableObject, IQueryAttributable
         Db.SaveChanges();
 
 
-        await Shell.Current.GoToAsync($"//MainPage?UpdateElements=True");
+
+        await Shell.Current.GoToAsync($"//MainPage?UpdateElements=True&ElementId={prymaryElement.Id}");
     }
 
 
@@ -104,8 +106,8 @@ class ArbitaryElementViewModel : ObservableObject, IQueryAttributable
             DbContextOptions<WarehouseContext> options = optionsBuilder.Options;
             using var Db = new WarehouseContext(options);
 
-            Element = Db.Indefined.First(x=>x.Id == id);
-            
+            Element = Db.Indefined.First(x=>x.Id == id);// init Element
+
             //Late initializating
             _model.BindingProperties(Element);
             prymaryElement = Element;

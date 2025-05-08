@@ -6,16 +6,18 @@ using Warehouse.DataBase.Models;
 
 namespace Warehouse.Auxiliary.Patterns
 {
-    public class DBManagerSubscriber  : ISubscriber
+    public class DBManagerSubscriber : ISubscriber
     {
-
         public DBManagerSubscriber() { }
 
-        //"args" can get values such as "DELETE", "ADD"... and throughes exceptions if method requires a info
-        public void Update(string? args = null, object? obj = null)
+        //"args" can get values such as "DELETE", "ADD"... and throws exceptions if method requires info
+        public void Update(string? args = null, object? obj = null, Dictionary<string, object>? qargs = null)
         {
             if (args == null)
                 return;
+
+            if (MauiProgram.Services == null)
+                throw new InvalidOperationException("MauiProgram.Services is not initialized.");
 
             var context = MauiProgram.Services.GetRequiredService<WarehouseContext>();
 
@@ -24,7 +26,6 @@ namespace Warehouse.Auxiliary.Patterns
 
             switch (args)
             {
-                
                 case "DELETE":
                     context.Remove(obj);
                     break;

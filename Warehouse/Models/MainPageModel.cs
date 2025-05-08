@@ -24,8 +24,8 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
     {
         //initializing
         OpenModalCommand = new AsyncRelayCommand(OpenModal);
-        ShowDetailsCommand = new AsyncRelayCommand<BaseElement>(ShowDetails);
-        DeleteElementCommand = new AsyncRelayCommand<BaseElement>(RemoveElement);
+        ShowDetailsCommand = new AsyncRelayCommand<BaseElement?>(ShowDetails);
+        DeleteElementCommand = new AsyncRelayCommand<BaseElement?>(RemoveElement);
         Elements = new ObservableCollection<BaseElement>();
         Subscribers = new List<ISubscriber>();
 
@@ -36,13 +36,14 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         LoadElements(20);
     }
 
-    private async Task RemoveElement(BaseElement? element)
+    private Task RemoveElement(BaseElement? element)
     {
         if (element == null)
-            return;
+            return Task.CompletedTask;
         Elements.Remove(element);
         OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Remove, element));
         NotifySubscribers("DELETE", element);
+        return Task.CompletedTask;
     }
 
     public async Task OpenModal()
@@ -50,8 +51,10 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         await Shell.Current.GoToAsync("ChooseTemplate");
     }
 
-    private async Task ShowDetails(BaseElement element)
+    private async Task ShowDetails(BaseElement? element)
     {
+        if (element == null)
+            return;
         await Shell.Current.GoToAsync(nameof(ArbitraryElement)+$"?Id={element.Id}");
     }
 
@@ -63,7 +66,7 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         DbContextOptions<WarehouseContext> options = optionsBuilder.Options;
         using var Db = new WarehouseContext(options);
 
-        List<BaseElement> colection = Db.Indefined.OrderBy(x => x.Id).Take(20).Select(x => new BaseElement(x.image, x.name, x.description, x.Id)).ToList();        
+        List<BaseElement> colection = Db.Indefined.OrderBy(x => x.Id).Take(20).Select(x => new BaseElement(x.Id, x.image, x.name, x.description)).ToList();        
 
         foreach (var item in colection) 
             Elements.Add((BaseElement)item);
@@ -97,7 +100,7 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         return true;
     }
 
-    public void NotifySubscribers(string? args = null, object? obj = null)
+    public void NotifySubscribers(string? args = null, object? obj = null, Dictionary<string, object>? qargs = null)
     {
         foreach (ISubscriber subscriber in Subscribers)
         {
@@ -105,29 +108,27 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         }
     }
 
-    public void Update(string? args = null, object? obj = null)
+    public void Update(string? args = null, object? obj = null, Dictionary<string, object>? qargs = null)
     {
-        if (args == "ADD")
+        if (args == "RELOAD" && qargs is not null)
         {
-            AddElement();
-        }
-        else if (args == "LOAD")
-        {
-            if (NavigationData.CurrentBaseElement is not null)
-                AddElement();
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
-        }
-        else if(args == "RELOAD")
-        {
-            int minId = Elements.Min(x => x.Id);
-            Elements = null;
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Remove));
+            int elementId = (int)qargs["ElementId"];
+            int index = Elements.IndexOf(Elements.First(x => x.Id == elementId));
+            BaseElement oldElement = Elements[index];
 
-            DbContextOptionsBuilder<WarehouseContext> optionsBuilder = new DbContextOptionsBuilder<WarehouseContext>().UseSqlServer(AppConfig.GetConnectionString());
-            using var Db = new WarehouseContext(optionsBuilder.Options);
+            var optionsBuilder = new DbContextOptionsBuilder<WarehouseContext>().UseSqlServer(AppConfig.GetConnectionString());
+            WarehouseContext Db = new WarehouseContext(optionsBuilder.Options);
 
-            List<BaseElement> colection = Db.Indefined.Where(x => x.Id > minId).OrderBy(x => x.Id).Select(x => new BaseElement(x.image, x.name, x.description, x.Id)).ToList();
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Add, colection));
+            BaseElement changedElement = Db.Indefined.First(x => x.Id == elementId);
+
+            // Corrected the OnCollectionChanged call to use the correct overload
+            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(
+                System.Collections.Specialized.NotifyCollectionChangedAction.Replace,
+                new List<BaseElement> { changedElement }, // New items
+                new List<BaseElement> { oldElement },    // Old items
+                index));
+
+            Elements[index] = changedElement;
         }
     }
 }

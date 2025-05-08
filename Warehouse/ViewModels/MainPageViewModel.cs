@@ -19,7 +19,10 @@ class MainPageViewModel : IQueryAttributable, IObserver, ISubscriber
     public ICommand DeleteElementCommand => _model.DeleteElementCommand;
 
 
-    public MainPageViewModel() { }
+    public MainPageViewModel() 
+    {
+        _subsribers.Add(_model);
+    }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
@@ -29,31 +32,33 @@ class MainPageViewModel : IQueryAttributable, IObserver, ISubscriber
             AfRows = 0;
     }
 
-    public void Update(string? args = null, object? obj = null)
+    public void Update(string? args = null, object? obj = null, Dictionary<string, object>? qargs = null)
     {
         if (args == "RELOAD")
-            NotifySubscribers("RELOAD", null);
-        else if (args == "LOAD")
-            NotifySubscribers("LOAD", null);
+            NotifySubscribers("RELOAD", null, qargs);
     }
 
     public bool AddSubscriber(ISubscriber? subscriber)
     {
+        if (subscriber == null)
+            return false;
         _subsribers.Add(subscriber);
         return true;
     }
 
     public bool RemoveSubscriber(ISubscriber? subscriber)
     {
+        if(subscriber == null)
+            return false;
         _subsribers.Remove(subscriber);
         return true;
     }
 
-    public void NotifySubscribers(string? args, object? obj)
+    public void NotifySubscribers(string? args, object? obj, Dictionary<string, object>? qargs = null)
     {
         foreach(var subscriber in _subsribers)
         {
-            subscriber.Update(args, obj);
+            subscriber.Update(args, obj, qargs);
         }
     }
 }

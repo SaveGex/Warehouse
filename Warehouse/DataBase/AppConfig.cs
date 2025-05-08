@@ -25,6 +25,5 @@ public static class AppConfig
         if(connectionString is null) 
             throw new Exception("Connection string is null. Check your appsettings.json or DI registration.");
         return connectionString;
-        
     }
 }

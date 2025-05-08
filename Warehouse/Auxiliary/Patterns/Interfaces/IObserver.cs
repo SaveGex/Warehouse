@@ -11,6 +11,6 @@ namespace Warehouse.Auxiliary.Patterns.Interfaces
 
         public bool AddSubscriber(ISubscriber? subscriber);
         public bool RemoveSubscriber(ISubscriber? subscriber);
-        public void NotifySubscribers(string? args, object? obj);
+        public void NotifySubscribers(string? args, object? obj, Dictionary<string, object>? qargs = null);
     }
 }

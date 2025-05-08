@@ -1,18 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Reflection.PortableExecutable;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Warehouse.DataBase.Models
 {
-    public class BaseElement
+    public class BaseElement : ObservableObject
     {
-        [NotMapped]
-        public static int countOfElements { get; set; } //general count of all elements getting max id from DB for synchronization 
         public int Id { get; set; }
-        [NotMapped]
-        public int objectIndex { get; set; } //current specific index of specific object
         public string? name { get; set; }
         public string? description { get; set; }
-        public byte[]? image { get; set; } // array of bytes which could be converted to some image... Perhaps .png or .jpg
+        [NotMapped]
+        private byte[]? _image; 
+        public byte[]? image
+        {
+            get => _image;
+            set
+            {
+                SetProperty(ref _image, value);
+                OnPropertyChanged(nameof(ImageSource)); // 🔄 тригер оновлення ImageSource
+            }
+        } // array of bytes which could be converted to some image... Perhaps .png or .jpg
 
         [NotMapped]
         public ImageSource ImageSource
@@ -29,36 +35,31 @@ namespace Warehouse.DataBase.Models
             }
         }
 
-        public BaseElement()
+        public BaseElement() { }
+
+        public BaseElement(byte[]? image = null, string? name = null, string? description = null)
         {
-            Id = countOfElements;
-            objectIndex = countOfElements;
-            countOfElements++;
-        }
-        public BaseElement(byte[]? image = null, string? name = null, string? description = null, int? id = null)
-        {
-            Id = (int)(id is null ? countOfElements : id);
-            objectIndex = countOfElements;
             this.image = image;
             this.name = name;
             this.description = description;
-            countOfElements++;
-
         }
-        public BaseElement(BaseElement element)
+
+        public BaseElement(int id, byte[]? image = null, string? name = null, string? description = null)
+        {
+            this.Id = id;
+            this.image = image;
+            this.name = name;
+            this.description = description;
+        }
+
+        public BaseElement(BaseElement element) // copying constructor
         {
             if (element == null)
                 throw new Exception("Element is null. Directory: " + Path.Join(AppContext.BaseDirectory, "DataBase", "Models", "BaseElement.cs"));
             Id = element.Id;
-            objectIndex = element.objectIndex;
             image = element.image;
             name = element.name;
             description = element.description;
-            countOfElements++;
-        }
-        ~BaseElement()
-        {
-            countOfElements--;
         }
 
         public static ImageSource? ConvertBytesToImageSource(byte[] bytes)

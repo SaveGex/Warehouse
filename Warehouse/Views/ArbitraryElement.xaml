@@ -13,36 +13,55 @@
 
     <ContentPage.Content>
         <StackLayout x:DataType="models:BaseElement"
-                             BindingContext="{Binding Element}">
+                     BindingContext="{Binding Element}">
             <Label Text="{Binding Id}"/>
-            <Entry Text="{Binding name}"
-                   SemanticProperties.HeadingLevel="Level1"
-                   FontSize="32"
-                   HorizontalOptions="Center"/>
-            <StackLayout HorizontalOptions="Center"
-                         MaximumHeightRequest="500">
-                <Image Source="{Binding ImageSource}"
-                       MinimumHeightRequest="100"
-                       MaximumHeightRequest="400"
-                       MinimumWidthRequest="100"
-                       MaximumWidthRequest="400"
-                       Aspect="AspectFill"/>
-                <Button Text="Change image"
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChangeImageCommand}"
-                        HeightRequest="50"
-                        MaximumWidthRequest="130"
-                        HorizontalOptions="End"/>
-            </StackLayout>
-            <Entry Text="{Binding description}"
-                   WidthRequest="250"
-                   HeightRequest="100"
-                   FontSize="18"
-                   HorizontalOptions="Center"/>
-            <Button Text="Save"
-                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChangeInfoCommand}"
-                    HeightRequest="50"
-                    WidthRequest="100"
-                    HorizontalOptions="Center"/>
+            <HorizontalStackLayout>
+                <VerticalStackLayout MaximumWidthRequest="1000">
+                    <Entry Text="{Binding name}"
+                           SemanticProperties.HeadingLevel="Level1"
+                           FontSize="32"
+                           MaximumWidthRequest="400"
+                           MaximumHeightRequest="50"
+                           VerticalOptions="Start"
+                           HorizontalOptions="Center"
+                           Margin="24"/>
+                    <Entry Text="{Binding description}"
+                           FontSize="18"
+                           HorizontalOptions="Center"
+                           MaximumWidthRequest="400"
+                           MaximumHeightRequest="150"
+                           Keyboard="Text"
+                           IsTextPredictionEnabled="False"
+                           Margin="24"/>
+                </VerticalStackLayout>
+                
+
+                
+                <VerticalStackLayout HorizontalOptions="End"
+                                     VerticalOptions="End"
+                                     MaximumWidthRequest="500">
+                    <Image Source="{Binding ImageSource}"
+                           MinimumHeightRequest="100"
+                           MaximumHeightRequest="400"
+                           MinimumWidthRequest="100"
+                           MaximumWidthRequest="400"
+                           Aspect="AspectFill"/>
+                    <Button Text="Change image"
+                            TextColor="White"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChangeImageCommand}"
+                            HeightRequest="50"
+                            WidthRequest="130"
+                            Margin="12"/>
+                    <Button Text="Save"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ChangeInfoCommand}"
+                            TextColor="White"
+                            HeightRequest="50"
+                            WidthRequest="100"
+                            Margin="12"/>
+                </VerticalStackLayout>
+                
+            </HorizontalStackLayout>
+            
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
