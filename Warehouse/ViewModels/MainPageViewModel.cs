@@ -35,7 +35,9 @@ class MainPageViewModel : IQueryAttributable, IObserver, ISubscriber
     public void Update(string? args = null, object? obj = null, Dictionary<string, object>? qargs = null)
     {
         if (args == "RELOAD")
-            NotifySubscribers("RELOAD", null, qargs);
+            NotifySubscribers("RELOAD", obj, qargs);
+        else if(args == "ADD")
+            NotifySubscribers("ADD", obj, qargs);
     }
 
     public bool AddSubscriber(ISubscriber? subscriber)

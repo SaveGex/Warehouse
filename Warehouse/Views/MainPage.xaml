@@ -43,10 +43,12 @@
 
                         <Button Text="Details"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ShowDetailsCommand}"
-                                CommandParameter="{Binding .}" />
+                                CommandParameter="{Binding .}" 
+                                Padding="12"/>
                         <Button Text="Delete"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteElementCommand}"
-                                CommandParameter="{Binding .}" />
+                                CommandParameter="{Binding .}" 
+                                Padding="12"/>
                     </VerticalStackLayout>
                 </Frame>
             </DataTemplate>

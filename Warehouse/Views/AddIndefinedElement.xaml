@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Warehouse.ViewModels"
+             xmlns:models="clr-namespace:Warehouse.DataBase.Models"
              x:Class="Warehouse.AddIndefinedElement"
-             Title="AddIndefinedElement">
-    <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,Auto,*,*,*">
+             Title="AddIndefinedElement"
+             x:DataType="vm:IndefinedElementViewModel">
+
+    <ContentPage.BindingContext>
+        <vm:IndefinedElementViewModel/>
+    </ContentPage.BindingContext>
+
+    <Grid ColumnDefinitions="*,*,*,*" 
+          RowDefinitions="*,*,Auto,*,*,*">
         
         <Button 
             Grid.Row="0"
@@ -12,7 +21,7 @@
             HorizontalOptions="End" VerticalOptions="Start"
             BackgroundColor="#1f1f1f"
             ImageSource="close.png" 
-            Clicked="OnCloseModalWindow"/>
+            Command="{Binding CloseModalWindow}"/>
 
 
 
@@ -21,7 +30,10 @@
                HeightRequest="50"
                Margin="0,0,100,0"
                x:Name="NamePostField"
-               Placeholder="Name of post"/>
+               Placeholder="Name of post"
+               BindingContext="{Binding Element}" 
+               x:DataType="models:BaseElement"
+               Text="{Binding name}"/>
         <!--<BoxView Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" HeightRequest="100" Margin="50,0,50,0">
             <BoxView.GestureRecognizers>
                 <DropGestureRecognizer Drop="OnImageDrop"/>
@@ -32,7 +44,7 @@
                 HeightRequest="25"
                 Margin="0,0,200,0"
                 Text="Pick image" 
-                Clicked="OnPickImage"/>
+                Command="{Binding PickImage}"/>
 
         <Image Grid.Row="2"
                Grid.Column="1" Grid.ColumnSpan="2"
@@ -41,6 +53,9 @@
                MaximumHeightRequest="200"
                Margin="200,0,100,0"
                x:Name="DroppedImage"
+               BindingContext="{Binding Element}" 
+               x:DataType="models:BaseElement"
+               Source="{Binding ImageSource}"
                Aspect="AspectFit">
             <Image.GestureRecognizers>
                 <PointerGestureRecognizer PointerEntered="OnHoverImage"
@@ -53,14 +68,17 @@
                 HeightRequest="100"
                 Placeholder="Describe your object "
                 Margin="0,40,100,0"
-                x:Name="DescriptionField"/>
+                x:Name="DescriptionField"
+                BindingContext="{Binding Element}" 
+                x:DataType="models:BaseElement"
+                Text="{Binding description}"/>
 
         <Button Grid.Row="4"
                 Grid.Column="1" Grid.ColumnSpan="2"
                 Margin="200, 0"
                 MaximumHeightRequest="50"
                 Text="Admit" TextColor="White"
-                Clicked="OnAdmit"/>
+                Command="{Binding Admit}"/>
 
     </Grid>
 </ContentPage>

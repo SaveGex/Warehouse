@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Warehouse.Auxiliary.Patterns.Interfaces;
+﻿using Warehouse.Auxiliary.Patterns.Interfaces;
 using Warehouse.DataBase;
 using Warehouse.DataBase.Models;
 

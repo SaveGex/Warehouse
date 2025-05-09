@@ -11,15 +11,17 @@ using Warehouse.Views;
 
 namespace Warehouse.Models;
 
-class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
+class MainPageModel : ISubscriber, IObserver
 {
-    public BaseElement? BaseElement { get; set; }
+    public BaseElement? Element { get; set; }
     private List<ISubscriber> Subscribers;
     public ObservableCollection<BaseElement> Elements { get; set; }
     public int AfRows { get; set; }
     public ICommand OpenModalCommand { get; }
     public ICommand ShowDetailsCommand { get; }
     public ICommand DeleteElementCommand { get; }
+
+    private readonly int _maxElements = 10; // Maximum number of elements to load at once for viewport
     public MainPageModel()
     {
         //initializing
@@ -33,16 +35,31 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         Subscribers.Add(new DBManagerSubscriber());
 
         //setup view
-        LoadElements(20);
+        LoadElements(_maxElements);
     }
 
     private Task RemoveElement(BaseElement? element)
     {
         if (element == null)
             return Task.CompletedTask;
-        Elements.Remove(element);
-        OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Remove, element));
+        int index = Elements.IndexOf(element);
+
+        
         NotifySubscribers("DELETE", element);
+        
+        var optionsBuilder = new DbContextOptionsBuilder<WarehouseContext>().UseSqlServer(AppConfig.GetConnectionString());
+        using var Db = new WarehouseContext(optionsBuilder.Options);
+        List<int> ids = Elements.Select(x => x.Id).ToList();
+        BaseElement? el = Db.Indefined.Where(x =>  !ids.Contains(x.Id) && x.Id < element.Id).OrderByDescending(x => x.Id).FirstOrDefault();
+
+        if (el is null)
+        {
+            Elements.Remove(element);
+            return Task.CompletedTask;
+        }
+        else
+            Elements[index] = el;     
+
         return Task.CompletedTask;
     }
 
@@ -66,7 +83,7 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
         DbContextOptions<WarehouseContext> options = optionsBuilder.Options;
         using var Db = new WarehouseContext(options);
 
-        List<BaseElement> colection = Db.Indefined.OrderBy(x => x.Id).Take(20).Select(x => new BaseElement(x.Id, x.image, x.name, x.description)).ToList();        
+        List<BaseElement> colection = Db.Indefined.OrderByDescending(x => x.Id).Take(count).Select(x => new BaseElement(x.Id, x.image, x.name, x.description)).ToList();        
 
         foreach (var item in colection) 
             Elements.Add((BaseElement)item);
@@ -74,13 +91,15 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
 
     private void AddElement()
     {
-        NotifySubscribers("ADD", BaseElement);
+        if (Elements.Count == _maxElements)
+            Elements.RemoveAt(Elements.Count - 1);
+
+        NotifySubscribers("ADD", NavigationData.CurrentBaseElement);
 
         if (NavigationData.CurrentBaseElement != null)
         {
-            BaseElement = NavigationData.CurrentBaseElement;
-            Elements.Add(NavigationData.CurrentBaseElement);
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(System.Collections.Specialized.NotifyCollectionChangedAction.Add, NavigationData.CurrentBaseElement));
+            Element = NavigationData.CurrentBaseElement;
+            Elements.Insert(0, NavigationData.CurrentBaseElement);
         }
     }
 
@@ -121,14 +140,11 @@ class MainPageModel : ObservableCollection<BaseElement>, ISubscriber, IObserver
 
             BaseElement changedElement = Db.Indefined.First(x => x.Id == elementId);
 
-            // Corrected the OnCollectionChanged call to use the correct overload
-            OnCollectionChanged(new System.Collections.Specialized.NotifyCollectionChangedEventArgs(
-                System.Collections.Specialized.NotifyCollectionChangedAction.Replace,
-                new List<BaseElement> { changedElement }, // New items
-                new List<BaseElement> { oldElement },    // Old items
-                index));
-
             Elements[index] = changedElement;
+        }
+        if(args == "ADD")
+        {
+            AddElement();
         }
     }
 }

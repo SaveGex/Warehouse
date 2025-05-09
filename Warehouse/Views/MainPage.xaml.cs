@@ -1,4 +1,5 @@
-﻿using Warehouse.Auxiliary.Patterns.Interfaces;
+﻿using Warehouse.Auxiliary;
+using Warehouse.Auxiliary.Patterns.Interfaces;
 
 namespace Warehouse
 {
@@ -20,7 +21,6 @@ namespace Warehouse
             NotifySubscribers("LOAD", null);
         }
 
-
         public bool AddSubscriber(ISubscriber? subscriber)
         {
             if (subscriber == null)
@@ -38,7 +38,7 @@ namespace Warehouse
         }
         public void NotifySubscribers(string? args = null, object? obj = null, Dictionary<string, object>? qargs = null)
         {
-            foreach(var subscriber in _subscribers)
+            foreach (var subscriber in _subscribers)
             {
                 if (subscriber is ISubscriber sub)
                 {
@@ -49,19 +49,24 @@ namespace Warehouse
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            string? args = null;
-            Dictionary<string, object>? qargs = new Dictionary<string, object>();
-
-            if (query.TryGetValue("UpdateElements", out var raw)
-                && bool.TryParse(raw?.ToString(), out var update)
+            if (query.TryGetValue("UpdateElements", out var rawUpdateElements)
+                && bool.TryParse(rawUpdateElements?.ToString(), out var update)
                 && update)
+            {
+                string? args = null;
+                Dictionary<string, object>? qargs = new Dictionary<string, object>();
                 args = "RELOAD";
+                if (query.ContainsKey("ElementId") && int.TryParse(query["ElementId"]?.ToString(), out var elementId))
+                    qargs["ElementId"] = elementId;
 
-
-            if (query.ContainsKey("ElementId") && int.TryParse(query["ElementId"]?.ToString(), out var elementId))
-                qargs["ElementId"] = elementId;
-            
-            NotifySubscribers(args, null, qargs);
+                NotifySubscribers(args, null, qargs);
+            }
+            else if (query.TryGetValue("AffectedRows", out var rawAffectedRows)
+                && int.TryParse(rawAffectedRows?.ToString(), out var afRows)
+                && afRows > 0)
+            {
+                NotifySubscribers("ADD", NavigationData.CurrentBaseElement, null);
+            }
         }
     }
 }
