@@ -21,7 +21,9 @@ public partial class AddIndefinedElement : ContentPage
         var image = sender as Image;
         if(image != null)
         {
-            await image.ScaleTo(2, 1050, Easing.CubicInOut);
+            image.MaximumWidthRequest = 550;
+            image.MaximumHeightRequest = 550;
+            await image.ScaleToAsync(2, 1050, Easing.CubicInOut);
         }
     }
 
@@ -31,7 +33,9 @@ public partial class AddIndefinedElement : ContentPage
         var image = sender as Image;
         if (image != null)
         {
-            await image.ScaleTo(1, 250, Easing.CubicInOut);
+            //image.MaximumWidthRequest = 250;
+            //image.MaximumHeightRequest = 250;
+            await image.ScaleToAsync(1, 250, Easing.CubicInOut);
         }
     }
 }

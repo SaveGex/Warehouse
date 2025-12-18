@@ -27,7 +27,7 @@
             x:Name="ShowGrid"
             RowDefinitions="*"
             ColumnDefinitions="*, *">
-            <Frame
+            <Border
                 x:Name="UnknownFrame"
                 Grid.Row="0"
                 Grid.Column="0"
@@ -47,13 +47,13 @@
                         Text="Add indefinite object"
                         Clicked="ToIndefinedElement"/>
                 </VerticalStackLayout>
-                <Frame.GestureRecognizers>
+                <Border.GestureRecognizers>
                     <PointerGestureRecognizer
                         PointerEntered="OnFrame"
                         PointerExited="OutFrame"/>
-                </Frame.GestureRecognizers>
-            </Frame>
-            <Frame
+                </Border.GestureRecognizers>
+            </Border>
+            <Border
                 Grid.Row="0"
                 Grid.Column="1"
                 MaximumWidthRequest="{StaticResource FrameMaxWidth}"
@@ -71,12 +71,12 @@
                         Text="Add some pizza"
                         Clicked="ToAddPizza"/>
                 </VerticalStackLayout>
-                <Frame.GestureRecognizers>
+                <Border.GestureRecognizers>
                     <PointerGestureRecognizer
                         PointerEntered="OnFrame"
                         PointerExited="OutFrame"/>
-                </Frame.GestureRecognizers>
-            </Frame>
+                </Border.GestureRecognizers>
+            </Border>
         </Grid>
     </ScrollView>
 </ContentPage>

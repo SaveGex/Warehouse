@@ -35,7 +35,7 @@ internal class IndefinedElementViewModel :ObservableObject
             if (Element.image == null) alert += "\n\nYou have to provide an image";
             if (string.IsNullOrWhiteSpace(Element.description)) alert += "\n\nYou have to provide some description about your object";
 
-            await Shell.Current.DisplayAlert("Warning", "You must fill out the form to add an element" + alert, "Ok");
+            await Shell.Current.DisplayAlertAsync("Warning", "You must fill out the form to add an element" + alert, "Ok");
             return;
         }
 

@@ -12,20 +12,20 @@ public partial class ChooseTemplate : ContentPage
 
     private void OnFrame(object sender, PointerEventArgs e)
 	{
-		if (sender is Frame frame)
+		if (sender is Border border)
 		{
-			var animation = new Animation(v => frame.BorderColor = Color.FromRgba(0, 252, 255, v), 0, 1);
-			animation.Commit(frame, "BorderAppear", length: 500, easing: Easing.Linear);
+			var animation = new Animation(v => border.BackgroundColor = Color.FromRgba(0, 252, 255, v), 0, 1);
+			animation.Commit(border, "BorderAppear", length: 500, easing: Easing.Linear);
 		}
     }
 
 
     private void OutFrame(object sender, PointerEventArgs e)
 	{
-		if (sender is Frame frame)
+		if (sender is Border border)
 		{
-            var animation = new Animation(v => frame.BorderColor = Color.FromRgba(0, 252, 255, v), 1, 0);
-			animation.Commit(frame, "BorderFade", length: 500, easing: Easing.Linear);
+            var animation = new Animation(v => border.BackgroundColor = Color.FromRgba(0, 252, 255, v), 1, 0);
+			animation.Commit(border, "BorderFade", length: 500, easing: Easing.Linear);
         }
     }
 
@@ -37,7 +37,7 @@ public partial class ChooseTemplate : ContentPage
 		for(int i = 0; i < ShowGrid.Count; i++)
 		{
 			var child = ShowGrid[i];
-			if (child is Frame frame)
+			if (child is Border border)
 			{
 				Border someBorder = new Border()
 				{
@@ -57,7 +57,7 @@ public partial class ChooseTemplate : ContentPage
 
 	private async void ToAddPizza(object sender, EventArgs e)
 	{
-		await DisplayAlert("In development...", "This template is in development", "OK");
+		await DisplayAlertAsync("In development...", "This template is in development", "OK");
         await Shell.Current.GoToAsync("..");
 	}
 
